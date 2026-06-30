@@ -5,7 +5,7 @@
 
 import os
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 # タイムゾーン考慮（日本時間）
@@ -64,5 +64,4 @@ def set_output(name, value):
     print(f"Output: {name}={value}")
 
 if __name__ == "__main__":
-    from datetime import timezone
     get_today_theme()

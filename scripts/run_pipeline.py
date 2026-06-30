@@ -7,7 +7,7 @@ import os
 import sys
 from pathlib import Path
 import anthropic
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 # 環境変数から情報を取得
 THEME_NAME = os.environ.get("THEME_NAME", "")
@@ -124,5 +124,4 @@ def main():
     print("="*50)
 
 if __name__ == "__main__":
-    from datetime import timedelta
     main()

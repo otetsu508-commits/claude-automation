@@ -1,0 +1,38 @@
+name: Update Calendar
+
+on:
+  schedule:
+    # 毎日6:00（日本時間）
+    - cron: '0 21 * * *'  # UTC 21:00 = JST 6:00
+  workflow_dispatch:  # 手動実行も可能
+
+jobs:
+  update-calendar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Check if last article of month
+        id: check
+        run: |
+          python skills/自動スライド生成/update-calendar.py
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add inputs/content-calendar-company.md || true
+          git diff --quiet && git diff --staged --quiet || git commit -m "Update content calendar"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main

@@ -1,0 +1,106 @@
+name: Note Article Generation
+
+on:
+  schedule:
+    # 火曜日と金曜日の6:00（日本時間）
+    - cron: '0 21 * * 1,4'  # UTC 21:00 = JST 6:00（夏時間）
+    - cron: '0 22 * * 1,4'  # UTC 22:00 = JST 7:00（冬時間、冬は調整が必要）
+  workflow_dispatch:  # 手動実行も可能
+
+jobs:
+  generate-article:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
+
+      - name: Get today's date
+        id: date
+        run: |
+          # 日本時間を取得
+          TZ='Asia/Tokyo'
+          echo "TODAY=$(date '+%Y-%m-%d')" >> $GITHUB_OUTPUT
+          echo "DOW=$(date '+%u')" >> $GITHUB_OUTPUT  # 1=月, 2=火, ..., 7=日
+
+      - name: Check if today is Tuesday or Friday
+        id: check-day
+        run: |
+          DOW=${{ steps.date.outputs.DOW }}
+          if [ "$DOW" = "2" ] || [ "$DOW" = "5" ]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+          else
+            echo "should_run=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Read content calendar
+        if: steps.check-day.outputs.should_run == 'true'
+        id: calendar
+        run: |
+          TODAY=${{ steps.date.outputs.TODAY }}
+          python -c "
+import re
+from pathlib import Path
+
+calendar_file = Path('inputs/content-calendar-company.md')
+content = calendar_file.read_text()
+
+# 今日の日付のテーマを探す
+pattern = f'\| {re.escape(TODAY)}.*?\|'
+matches = re.findall(pattern, content)
+
+if matches:
+    for match in matches:
+        parts = match.split('|')
+        if len(parts) >= 3:
+            theme = parts[2].strip()
+            print(f'THEME={theme}' >> open('$GITHUB_OUTPUT', 'a'))
+            print(f'Found theme: {theme}')
+"
+
+      - name: Create input file
+        if: steps.check-day.outputs.should_run == 'true'
+        run: |
+          TODAY=${{ steps.date.outputs.TODAY }}
+          THEME=${{ steps.calendar.outputs.THEME }}
+          mkdir -p inputs/themes/${TODAY}_article
+
+          cat > inputs/themes/${TODAY}_article/input.md << EOF
+# コンテンツ入力
+
+## テーマ
+${THEME}
+
+## 目的
+note記事公開
+
+## ターゲット
+中小企業経営者、個人事業主
+
+## CTA
+「より詳しく知りたい方は、無料診断へ」
+EOF
+
+      - name: Commit changes
+        if: steps.check-day.outputs.should_run == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add inputs/themes/ || true
+          git diff --quiet && git diff --staged --quiet || git commit -m "Generate article input for ${{ steps.date.outputs.TODAY }}"
+
+      - name: Push changes
+        if: steps.check-day.outputs.should_run == 'true'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main

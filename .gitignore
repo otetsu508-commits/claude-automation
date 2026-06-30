@@ -1,0 +1,26 @@
+# 認証情報
+credentials/
+*.pickle
+*.json
+.env
+
+# 一時ファイル
+temp/
+*.tmp
+*.log
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE
+.vscode/
+.idea/
+
+# その他
+*.xlsx
+backups/
+file-history/
+paste-cache/
+session-env/

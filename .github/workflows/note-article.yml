@@ -43,6 +43,8 @@ jobs:
           python scripts/run_pipeline.py
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          THEME_NAME: ${{ steps.get-theme.outputs.theme_name }}
+          DATE: ${{ steps.get-theme.outputs.date }}
 
       - name: Commit and push generated content
         if: steps.get-theme.outputs.theme_found == 'true'

@@ -95,13 +95,13 @@ def main():
     with open(input_file, "r", encoding="utf-8") as f:
         input_content = f.read()
 
-    # パイプラインステージ
+    # パイプラインステージ（エージェント名はcontent-xxx.md）
     stages = [
-        ("strategist", "角度決め"),
-        ("researcher", "リサーチ"),
-        ("writer", "ドラフト作成"),
-        ("editor", "編集"),
-        ("publisher", "最終出力")
+        ("content-strategist", "角度決め"),
+        ("content-researcher", "リサーチ"),
+        ("content-writer", "ドラフト作成"),
+        ("content-editor", "編集"),
+        ("content-publisher", "最終出力")
     ]
 
     current_input = input_content

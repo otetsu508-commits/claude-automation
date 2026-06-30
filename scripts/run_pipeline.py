@@ -33,7 +33,7 @@ def run_agent(agent_name: str, input_content: str) -> str:
     # Claude APIを呼び出し
     message = client.messages.create(
         model="claude-sonnet-4-20250514",
-        max_tokens=4096,
+        max_tokens=8192,
         system=agent_definition,
         messages=[
             {"role": "user", "content": input_content}

@@ -19,12 +19,56 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Check if last article of month
+      - name: Check and update calendar
         id: check
         run: |
-          python skills/自動スライド生成/update-calendar.py
+          python3 << 'PYEOF'
+import re
+from datetime import datetime, timedelta
+from pathlib import Path
+
+CALENDAR_FILE = Path('inputs/content-calendar-company.md')
+
+if not CALENDAR_FILE.exists():
+    print("Calendar file not found")
+    exit(0)
+
+with open(CALENDAR_FILE, 'r', encoding='utf-8') as f:
+    content = f.read()
+
+# 最後の記事の日付を取得
+pattern = r'\|\s*(\d{4}-\d{2}-\d{2})\s*\|'
+matches = re.findall(pattern, content)
+
+if not matches:
+    print("No articles found")
+    exit(0)
+
+last_date = matches[-1]
+print(f"Last article date: {last_date}")
+
+# 月の最後の記事かどうか判定
+date_obj = datetime.fromisoformat(last_date)
+
+# その月の最終日を取得
+if date_obj.month == 12:
+    last_day = date_obj.replace(day=31)
+else:
+    next_month = date_obj.replace(month=date_obj.month + 1, day=1)
+    last_day = next_month - timedelta(days=1)
+
+# 最終日から7日以内なら「月の最後の記事」とみなす
+is_last = (last_day - date_obj).days <= 7
+
+if is_last:
+    print("This is the last article of the month - adding next month themes")
+    print("TODO: Implement next month theme generation")
+else:
+    print("Not the last article - no update needed")
+PYEOF
 
       - name: Commit changes
+        if: steps.check.outputs.out == 'This is the last article of the month - adding next month themes'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
@@ -32,7 +76,8 @@ jobs:
           git diff --quiet && git diff --staged --quiet || git commit -m "Update content calendar"
 
       - name: Push changes
+        if: steps.check.outputs.out == 'This is the last article of the month - adding next month themes'
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
+          branch: master

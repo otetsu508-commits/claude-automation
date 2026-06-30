@@ -3,126 +3,21 @@ name: Note Article Generation
 on:
   schedule:
     # 火曜日と金曜日の6:00（日本時間）= UTC 21:00（前日）
-    - cron: '0 21 * * 1,4'  # 月=1, 木=4（日本時間の火・金）
-  workflow_dispatch:  # 手動実行も可能
+    - cron: '0 21 * * 1,4'
+  workflow_dispatch:
 
 jobs:
-  generate-article:
+  test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Install dependencies
+      - name: Check files
         run: |
-          pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
-
-      - name: Get today's date
-        id: date
-        run: |
-          # 日本時間を取得
-          export TZ='Asia/Tokyo'
-          TODAY=$(date '+%Y-%m-%d')
-          DOW=$(date '+%u')  # 1=月, 2=火, ..., 7=日
-          echo "TODAY=$TODAY" >> $GITHUB_OUTPUT
-          echo "DOW=$DOW" >> $GITHUB_OUTPUT
-          echo "Date: $TODAY, Day of week: $DOW"
-
-      - name: Check if today is Tuesday or Friday
-        id: check-day
-        run: |
-          DOW=${{ steps.date.outputs.DOW }}
-          if [ "$DOW" = "2" ] || [ "$DOW" = "5" ]; then
-            echo "should_run=true" >> $GITHUB_OUTPUT
-            echo "Today is Tuesday or Friday - proceeding"
-          else
-            echo "should_run=false" >> $GITHUB_OUTPUT
-            echo "Today is not Tuesday or Friday - skipping"
-          fi
-
-      - name: Read content calendar
-        if: steps.check-day.outputs.should_run == 'true'
-        id: calendar
-        run: |
-          TODAY=${{ steps.date.outputs.TODAY }}
-          python3 << 'PYEOF'
-import re
-from pathlib import Path
-import os
-
-calendar_file = Path('inputs/content-calendar-company.md')
-if not calendar_file.exists():
-    print(f"Calendar file not found: {calendar_file}")
-    exit(1)
-
-content = calendar_file.read_text()
-
-# 今日の日付のテーマを探す
-pattern = f'\\| {re.escape(os.getenv("TODAY"))}.*?\\|'
-matches = re.findall(pattern, content)
-
-if matches:
-    for match in matches:
-        parts = match.split('|')
-        if len(parts) >= 3:
-            theme = parts[2].strip()
-            with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
-                f.write(f'THEME={theme}\n')
-            print(f'Found theme: {theme}')
-else:
-    print(f"No theme found for {os.getenv('TODAY')}")
-PYEOF
-
-      - name: Display theme
-        if: steps.check-day.outputs.should_run == 'true'
-        run: |
-          echo "Theme: ${{ steps.calendar.outputs.THEME }}"
-
-      - name: Create input file
-        if: steps.check-day.outputs.should_run == 'true'
-        run: |
-          TODAY=${{ steps.date.outputs.TODAY }}
-          THEME="${{ steps.calendar.outputs.THEME }}"
-          mkdir -p inputs/themes/${TODAY}_article
-
-          cat > inputs/themes/${TODAY}_article/input.md << 'EOF'
-# コンテンツ入力
-
-## テーマ
-THEME_VALUE
-
-## 目的
-note記事公開
-
-## ターゲット
-中小企業経営者、個人事業主
-
-## CTA
-「より詳しく知りたい方は、無料診断へ」
-EOF
-
-          # テーマを埋め込み
-          sed -i "s/THEME_VALUE/$THEME/" inputs/themes/${TODAY}_article/input.md
-
-          echo "Created input file for $TODAY"
-
-      - name: Commit changes
-        if: steps.check-day.outputs.should_run == 'true'
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add inputs/themes/ || true
-          git diff --quiet && git diff --staged --quiet || git commit -m "Generate article input for ${{ steps.date.outputs.TODAY }}"
-
-      - name: Push changes
-        if: steps.check-day.outputs.should_run == 'true'
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: master
+          echo "Checking files..."
+          ls -la
+          echo ""
+          echo "Checking inputs folder..."
+          ls -la inputs/ || echo "inputs folder not found"

@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI活用診断（無料）お申し込み | インテリジェンス・パートナーズ</title>
+    <style>
+        .error { border-color: #e74c3c !important; }
+        .error-message { color: #e74c3c; font-size: 12px; margin-top: 5px; display: none; }
+        .error-message.visible { display: block; }
+        .confirm-screen { display: none; }
+        .confirm-screen.visible { display: block; }
+        .input-screen.hidden { display: none; }
+        .confirm-item { margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed #ddd; }
+        .confirm-item:last-child { border-bottom: none; }
+        .confirm-label { font-weight: 500; color: #666; font-size: 13px; }
+        .confirm-value { margin-top: 5px; font-size: 14px; }
+        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-secondary { flex: 1; padding: 15px; background: #999; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
+        .btn-secondary:hover { background: #777; }
+        .loading { display: none; text-align: center; padding: 20px; }
+        .loading.visible { display: block; }
+        .spinner { border: 3px solid #f3f3f3; border-top: 3px solid #4a90e2; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+        .form-card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-section {
+            margin-bottom: 30px;
+        }
+        .form-section h2 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #4a90e2;
+            color: #4a90e2;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        .required {
+            color: #e74c3c;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="tel"],
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #4a90e2;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+        }
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 8px;
+        }
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            font-weight: normal;
+        }
+        .radio-group input[type="radio"] {
+            margin-right: 8px;
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .submit-btn:hover {
+            background: #3a7bc8;
+        }
+        .note {
+            font-size: 12px;
+            color: #999;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .checkbox-label {
+            font-weight: normal;
+            font-size: 13px;
+        }
+        .checkboxes-error { display: none; margin-top: 10px; padding: 10px; background: #fee; border-radius: 4px; font-size: 13px; color: #c00; }
+        .checkboxes-error.visible { display: block; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>AI活用診断（無料）お申し込み</h1>
+            <p>中小企業の経営者様向け：60分で「AIで何ができるか」が分かります</p>
+        </div>
+
+        <form class="form-card" id="applicationForm">
+            <!-- 基本情報 -->
+            <div class="form-section">
+                <h2>基本情報</h2>
+
+                <div class="form-group">
+                    <label>会社名 <span class="required">必須</span></label>
+                    <input type="text" name="company_name" id="company_name" required placeholder="株式会社〇〇">
+                    <div class="error-message" id="error-company_name">会社名を入力してください</div>
+                </div>
+
+                <div class="form-group">
+                    <label>ご担当者名 <span class="required">必須</span></label>
+                    <input type="text" name="person_name" id="person_name" required placeholder="山田 太郎">
+                    <div class="error-message" id="error-person_name">担当者名を入力してください</div>
+                </div>
+
+                <div class="form-group">
+                    <label>お電話番号 <span class="required">必須</span></label>
+                    <input type="tel" name="phone" id="phone" required placeholder="090-XXXX-XXXX">
+                    <div class="error-message" id="error-phone">電話番号を正しく入力してください</div>
+                </div>
+
+                <div class="form-group">
+                    <label>メールアドレス <span class="required">必須</span></label>
+                    <input type="email" name="email" id="email" required placeholder="example@company.com">
+                    <div class="error-message" id="error-email">メールアドレスを正しく入力してください</div>
+                </div>
+
+                <div class="form-group">
+                    <label>従業員数 <span class="required">必須</span></label>
+                    <select name="employees" id="employees" required>
+                        <option value="">選択してください</option>
+                        <option value="1-10">1〜10名</option>
+                        <option value="11-50">11〜50名</option>
+                        <option value="51-100">51〜100名</option>
+                        <option value="101-300">101〜300名</option>
+                        <option value="301+">301名以上</option>
+                    </select>
+                    <div class="error-message" id="error-employees">従業員数を選択してください</div>
+                </div>
+            </div>
+
+            <!-- 業種・業態 -->
+            <div class="form-section">
+                <h2>業種・業態</h2>
+
+                <div class="form-group">
+                    <label>業種 <span class="required">必須</span></label>
+                    <select name="industry" id="industry" required>
+                        <option value="">選択してください</option>
+                        <option value="manufacturing">製造業</option>
+                        <option value="construction">建設業</option>
+                        <option value="retail">小売業</option>
+                        <option value="food">飲食業</option>
+                        <option value="service">サービス業</option>
+                        <option value="it">IT・通信</option>
+                        <option value="other">その他</option>
+                    </select>
+                    <div class="error-message" id="error-industry">業種を選択してください</div>
+                </div>
+            </div>
+
+            <!-- 現在の課題 -->
+            <div class="form-section">
+                <h2>現在の課題</h2>
+
+                <div class="form-group">
+                    <label>特に負担を感じている業務 <span class="required">必須</span></label>
+                    <div class="radio-group">
+                        <label><input type="checkbox" name="tasks" value="email"> メールの返信・作成</label>
+                        <label><input type="checkbox" name="tasks" value="documents"> 資料・報告書の作成</label>
+                        <label><input type="checkbox" name="tasks" value="minutes"> 会議議事録の作成</label>
+                        <label><input type="checkbox" name="tasks" value="analysis"> データ分析・集計</label>
+                        <label><input type="checkbox" name="tasks" value="sns"> SNS投稿</label>
+                        <label><input type="checkbox" name="tasks" value="customer"> 顧客対応</label>
+                        <label><input type="checkbox" name="tasks" value="other"> その他</label>
+                    </div>
+                    <div class="checkboxes-error" id="error-tasks">少なくとも1つ選択してください</div>
+                </div>
+
+                <div class="form-group">
+                    <label>その他ご質問やご希望</label>
+                    <textarea name="message" placeholder="ご質問やご希望があればご記入ください（任意）"></textarea>
+                </div>
+            </div>
+
+            <!-- ご希望の日時 -->
+            <div class="form-section">
+                <h2>ご希望の日時</h2>
+
+                <div class="form-group">
+                    <label>診断のご希望日時</label>
+                    <input type="text" name="preferred_date" placeholder="2026年7月10日 14:00（任意）">
+                </div>
+            </div>
+
+            <!-- プライバシーポリシー -->
+            <div class="form-section">
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="privacy" name="privacy" required>
+                    <label for="privacy" class="checkbox-label">
+                        プライバシーポリシーに同意する <span class="required">必須</span>
+                    </label>
+                </div>
+                <div class="error-message" id="error-privacy">プライバシーポリシーへの同意が必要です</div>
+            </div>
+
+            <!-- 入力画面 -->
+            <div class="input-screen" id="inputScreen">
+                <button type="button" class="submit-btn" id="confirmBtn">入力内容を確認する</button>
+            </div>
+
+            <!-- 確認画面 -->
+            <div class="confirm-screen" id="confirmScreen">
+                <div class="form-section">
+                    <h2>入力内容の確認</h2>
+
+                    <div class="confirm-item">
+                        <div class="confirm-label">会社名</div>
+                        <div class="confirm-value" id="confirm-company_name"></div>
+                    </div>
+
+                    <div class="confirm-item">
+                        <div class="confirm-label">ご担当者名</div>
+                        <div class="confirm-value" id="confirm-person_name"></div>
+                    </div>
+
+                    <div class="confirm-item">
+                        <div class="confirm-label">お電話番号</div>
+                        <div class="confirm-value" id="confirm-phone"></div>
+                    </div>
+
+                    <div class="confirm-item">
+                        <div class="confirm-label">メールアドレス</div>
+                        <div class="confirm-value" id="confirm-email"></div>
+                    </div>
+
+                    <div class="confirm-item">
+                        <div class="confirm-label">従業員数</div>
+                        <div class="confirm-value" id="confirm-employees"></div>
+                    </div>
+
+                    <div class="confirm-item">
+                        <div class="confirm-label">業種</div>
+                        <div class="confirm-value" id="confirm-industry"></div>
+                    </div>
+
+                    <div class="confirm-item">
+                        <div class="confirm-label">負担を感じている業務</div>
+                        <div class="confirm-value" id="confirm-tasks"></div>
+                    </div>
+
+                    <div class="confirm-item">
+                        <div class="confirm-label">その他ご質問やご希望</div>
+                        <div class="confirm-value" id="confirm-message"></div>
+                    </div>
+
+                    <div class="confirm-item">
+                        <div class="confirm-label">診断のご希望日時</div>
+                        <div class="confirm-value" id="confirm-preferred_date"></div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn-secondary" id="backBtn">入力に戻る</button>
+                    <button type="submit" class="submit-btn" id="submitBtn">この内容で送信する</button>
+                </div>
+            </div>
+
+            <!-- ローディング画面 -->
+            <div class="loading" id="loadingScreen">
+                <div class="spinner"></div>
+                <p>送信中です...</p>
+            </div>
+
+            <p class="note">
+                ※ 無料診断は1社1回までです<br>
+                ※ 診断結果を元に有料サービスを提案する場合がありますが、強い売り込みはありません
+            </p>
+        </form>
+    </div>
+
+    <script>
+        // FormspreeのフォームID（ここに実際のIDを設定してください）
+        // Formspree.io で無料登録後、フォームIDを取得して 'YOUR_FORM_ID' を置き換えてください
+        const FORMSPREE_ID = 'xjgqaorj';
+        const FORMSPREE_URL = `https://formspree.io/f/${FORMSPREE_ID}`;
+
+        const form = document.getElementById('applicationForm');
+        const inputScreen = document.getElementById('inputScreen');
+        const confirmScreen = document.getElementById('confirmScreen');
+        const loadingScreen = document.getElementById('loadingScreen');
+        const confirmBtn = document.getElementById('confirmBtn');
+        const backBtn = document.getElementById('backBtn');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // 業種のマッピング
+        const industryMap = {
+            'manufacturing': '製造業',
+            'construction': '建設業',
+            'retail': '小売業',
+            'food': '飲食業',
+            'service': 'サービス業',
+            'it': 'IT・通信',
+            'other': 'その他'
+        };
+
+        // 従業員数のマッピング
+        const employeesMap = {
+            '1-10': '1〜10名',
+            '11-50': '11〜50名',
+            '51-100': '51〜100名',
+            '101-300': '101〜300名',
+            '301+': '301名以上'
+        };
+
+        // 業務のマッピング
+        const tasksMap = {
+            'email': 'メールの返信・作成',
+            'documents': '資料・報告書の作成',
+            'minutes': '会議議事録の作成',
+            'analysis': 'データ分析・集計',
+            'sns': 'SNS投稿',
+            'customer': '顧客対応',
+            'other': 'その他'
+        };
+
+        // バリデーション関数
+        function validateField(fieldId, validator) {
+            const field = document.getElementById(fieldId);
+            const errorEl = document.getElementById(`error-${fieldId}`);
+            const isValid = validator(field.value);
+
+            if (!isValid) {
+                field.classList.add('error');
+                if (errorEl) errorEl.classList.add('visible');
+            } else {
+                field.classList.remove('error');
+                if (errorEl) errorEl.classList.remove('visible');
+            }
+            return isValid;
+        }
+
+        // 電話番号バリデーション
+        function validatePhone(value) {
+            return /^0\d{1,4}-?\d{1,4}-?\d{3,4}$/.test(value.replace(/[－-]/g, '-'));
+        }
+
+        // メールアドレスバリデーション
+        function validateEmail(value) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+        }
+
+        // チェックボックスバリデーション
+        function validateCheckboxes() {
+            const checkboxes = document.querySelectorAll('input[name="tasks"]:checked');
+            const errorEl = document.getElementById('error-tasks');
+            const isValid = checkboxes.length > 0;
+
+            if (!isValid) {
+                errorEl.classList.add('visible');
+            } else {
+                errorEl.classList.remove('visible');
+            }
+            return isValid;
+        }
+
+        // 全体バリデーション
+        function validateForm() {
+            let isValid = true;
+
+            isValid &= validateField('company_name', v => v.trim() !== '');
+            isValid &= validateField('person_name', v => v.trim() !== '');
+            isValid &= validateField('phone', validatePhone);
+            isValid &= validateField('email', validateEmail);
+            isValid &= validateField('employees', v => v !== '');
+            isValid &= validateField('industry', v => v !== '');
+            isValid &= validateCheckboxes();
+
+            // プライバシーチェック
+            const privacy = document.getElementById('privacy');
+            const privacyError = document.getElementById('error-privacy');
+            if (!privacy.checked) {
+                privacyError.classList.add('visible');
+                isValid = false;
+            } else {
+                privacyError.classList.remove('visible');
+            }
+
+            return isValid;
+        }
+
+        // 確認画面にデータを表示
+        function showConfirmScreen() {
+            document.getElementById('confirm-company_name').textContent = document.getElementById('company_name').value;
+            document.getElementById('confirm-person_name').textContent = document.getElementById('person_name').value;
+            document.getElementById('confirm-phone').textContent = document.getElementById('phone').value;
+            document.getElementById('confirm-email').textContent = document.getElementById('email').value;
+            document.getElementById('confirm-employees').textContent = employeesMap[document.getElementById('employees').value] || '';
+            document.getElementById('confirm-industry').textContent = industryMap[document.getElementById('industry').value] || '';
+
+            // チェックボックス
+            const selectedTasks = [];
+            document.querySelectorAll('input[name="tasks"]:checked').forEach(cb => {
+                selectedTasks.push(tasksMap[cb.value] || cb.value);
+            });
+            document.getElementById('confirm-tasks').textContent = selectedTasks.join('、');
+
+            // その他
+            document.getElementById('confirm-message').textContent = document.querySelector('textarea[name="message"]').value || 'なし';
+            document.getElementById('confirm-preferred_date').textContent = document.querySelector('input[name="preferred_date"]').value || 'なし';
+
+            inputScreen.classList.add('hidden');
+            confirmScreen.classList.add('visible');
+        }
+
+        // 入力画面に戻る
+        function backToInput() {
+            confirmScreen.classList.remove('visible');
+            inputScreen.classList.remove('hidden');
+        }
+
+        // 確認ボタンクリック
+        confirmBtn.addEventListener('click', function() {
+            if (validateForm()) {
+                showConfirmScreen();
+            } else {
+                // 最初のエラー項目にスクロール
+                const firstError = document.querySelector('.error');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        });
+
+        // 戻るボタンクリック
+        backBtn.addEventListener('click', backToInput);
+
+        // 入力時にエラー解除
+        document.querySelectorAll('input, select, textarea').forEach(el => {
+            el.addEventListener('input', function() {
+                this.classList.remove('error');
+                const errorEl = document.getElementById(`error-${this.id}`);
+                if (errorEl) errorEl.classList.remove('visible');
+                document.getElementById('error-tasks').classList.remove('visible');
+                document.getElementById('error-privacy').classList.remove('visible');
+            });
+        });
+
+        // フォーム送信
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Formspree IDが設定されているかチェック
+            if (FORMSPREE_ID === 'YOUR_FORM_ID') {
+                alert('FormspreeのフォームIDが設定されていません。\n\n1. Formspree.io で無料登録\n2. 新しいフォームを作成\n3. フォームIDをコピー\n4. コード内のYOUR_FORM_IDを置き換え\n\n※ 現在はデモモードです');
+                return;
+            }
+
+            // ローディング表示
+            confirmScreen.classList.remove('visible');
+            loadingScreen.classList.add('visible');
+
+            // FormData作成
+            const formData = new FormData(form);
+
+            // Formspreeに送信
+            try {
+                const response = await fetch(FORMSPREE_URL, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    // サンキューページへ遷移
+                    window.location.href = 'thank-you.html';
+                } else {
+                    const data = await response.json();
+                    throw new Error(data.error || '送信に失敗しました');
+                }
+            } catch (error) {
+                loadingScreen.classList.remove('visible');
+                confirmScreen.classList.add('visible');
+                alert('送信に失敗しました。時間をおいて再度お試しください。\n\nエラー: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>

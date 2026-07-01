@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ご申し込みありがとうございます | インテリジェンス・パートナーズ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 500px;
+            width: 100%;
+        }
+        .thank-you-card {
+            background: white;
+            padding: 50px 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+            animation: fadeIn 0.6s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: scaleIn 0.5s ease-out;
+        }
+        @keyframes scaleIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+        .icon svg {
+            width: 40px;
+            height: 40px;
+            fill: white;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .subtitle {
+            color: #666;
+            font-size: 15px;
+            margin-bottom: 30px;
+        }
+        .info-box {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        .info-box h2 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #667eea;
+        }
+        .info-box ul {
+            list-style: none;
+            padding: 0;
+        }
+        .info-box li {
+            font-size: 14px;
+            color: #555;
+            padding: 6px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        .info-box li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+        .contact-info {
+            font-size: 13px;
+            color: #777;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .contact-info a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .contact-info a:hover {
+            text-decoration: underline;
+        }
+        .back-btn {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        .back-btn:hover {
+            background: #5568d3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="thank-you-card">
+            <div class="icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                </svg>
+            </div>
+
+            <h1>ご申し込みありがとうございます</h1>
+            <p class="subtitle">AI活用診断（無料）のお申し込みを受け付けました</p>
+
+            <div class="info-box">
+                <h2>今後の流れ</h2>
+                <ul>
+                    <li>担当者より48時間以内にご連絡いたします</li>
+                    <li>メールにて診断日時の調整を行います</li>
+                    <li>オンライン（Zoom）または対面で実施</li>
+                    <li>診断結果は当日お渡しいたします</li>
+                </ul>
+            </div>
+
+            <p style="font-size: 14px; color: #666; margin-bottom: 20px;">
+                万一、48時間以内に連絡がない場合は、<br>
+                お手数ですが下記までご連絡ください。
+            </p>
+
+            <div class="contact-info">
+                <p>インテリジェンス・パートナーズ</p>
+                <p>メール：<a href="mailto:info@intelligence-partners.co.jp">info@intelligence-partners.co.jp</a></p>
+                <p>電話：03-XXXX-XXXX</p>
+            </div>
+
+            <a href="index.html" class="back-btn">トップページに戻る</a>
+        </div>
+    </div>
+
+    <script>
+        // ページ表示時にGoogleアナリティクス等のイベント送信（必要に応じて）
+        // gtag('event', 'conversion', {'send_to': 'AW-CONVERSION_ID'});
+    </script>
+</body>
+</html>
